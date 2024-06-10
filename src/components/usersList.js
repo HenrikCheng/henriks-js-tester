@@ -1,12 +1,16 @@
 import React, { useState } from "react";
 import useSWR from "swr";
 
-const fetcher = (url) => fetch(url).then((res) => res.json());
+// Custom hook to fetch products
+const useProducts = () => {
+	const fetcher = (url) => fetch(url).then((res) => res.json());
+	const { data, error } = useSWR("https://dummyjson.com/products", fetcher);
+	return { data, error };
+};
 
 const UsersList = () => {
 	const [currentUser, setCurrentUser] = useState(null);
-
-	const { data, error } = useSWR("https://dummyjson.com/products", fetcher);
+	const { data, error } = useProducts();
 
 	if (error) return <div>Error loading data</div>;
 	if (!data) return <div>Loading...</div>;
@@ -19,12 +23,14 @@ const UsersList = () => {
 
 	const handleUserChange = (event) => {
 		const userId = parseInt(event.target.value);
-		setCurrentUser(users.find((user) => user.id === userId));
+		setCurrentUser(userId);
 	};
 
 	const filteredProducts = currentUser
 		? data.products.filter((product) =>
-				currentUser.products.includes(product.id),
+				users
+					.find((user) => user.id === currentUser)
+					.products.includes(product.id),
 		  )
 		: [];
 
@@ -43,7 +49,7 @@ const UsersList = () => {
 					</label>
 				))}
 			</div>
-			<div>Current user: {currentUser?.id}</div>
+			<div>Current user: {currentUser}</div>
 			<div>
 				Current user data:
 				<ol>
@@ -55,10 +61,9 @@ const UsersList = () => {
 
 			<h2>All products</h2>
 			<ol>
-				{data &&
-					data.products.map((product) => (
-						<li key={product.id}>{product.title}</li>
-					))}
+				{data.products.map((product) => (
+					<li key={product.id}>{product.title}</li>
+				))}
 			</ol>
 		</div>
 	);
