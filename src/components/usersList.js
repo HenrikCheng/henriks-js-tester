@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import useSWR from "swr";
+import CurrentUserDisplay from "./currentUserDisplay";
 
 // Custom hook to fetch products
 const useProducts = () => {
 	const fetcher = (url) => fetch(url).then((res) => res.json());
-	const { data, error } = useSWR("https://dummyjson.com/products", fetcher);
+	const { data, error } = useSWR(
+		"https://dummyjson.com/products?limit=5",
+		fetcher,
+	);
 	return { data, error };
 };
 
@@ -36,28 +40,12 @@ const UsersList = () => {
 
 	return (
 		<div>
-			<div>
-				{users.map((user) => (
-					<label key={user.id}>
-						<input
-							type="radio"
-							value={user.id}
-							name="id"
-							onChange={handleUserChange}
-						/>
-						user: {user.id}
-					</label>
-				))}
-			</div>
-			<div>Current user: {currentUser}</div>
-			<div>
-				Current user data:
-				<ol>
-					{filteredProducts.map((product) => (
-						<li key={product.id}>{product.title}</li>
-					))}
-				</ol>
-			</div>
+			<CurrentUserDisplay
+				users={users}
+				currentUser={currentUser}
+				handleUserChange={handleUserChange}
+				filteredProducts={filteredProducts}
+			/>
 
 			<h2>All products</h2>
 			<ol>
