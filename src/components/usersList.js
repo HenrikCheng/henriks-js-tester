@@ -32,7 +32,7 @@ const UsersList = () => {
 		<div className="bg-red-500">
 			<div>
 				{users.map((user) => (
-					<label>
+					<label key={user.id}>
 						<input
 							type="radio"
 							value={user.id}
@@ -43,12 +43,15 @@ const UsersList = () => {
 					</label>
 				))}
 			</div>
-			<div>Current user: {currentUser}</div>
+			<div>Current user: {currentUser?.id}</div>
 			<div>Current user data: {JSON.stringify(filteredProducts, null, 2)}</div>
 
 			<h2>All products</h2>
 			<ol>
-				{data && data.products.map((product) => <li>{product.title}</li>)}
+				{data &&
+					data.products.map((product) => (
+						<li key={product.id}>{product.title}</li>
+					))}
 			</ol>
 		</div>
 	);
